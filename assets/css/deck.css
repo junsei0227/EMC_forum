@@ -1,0 +1,355 @@
+/* =========================================================
+   EMC共創フォーラム 企画説明スライド
+   デザインの考え方は DESIGN.md を参照
+   ========================================================= */
+
+/* ---------- デザイントークン ---------- */
+:root {
+  /* 基本色 */
+  --ink: #14213d;        /* 本文・見出し（深い紺） */
+  --ink-sub: #5b6475;    /* 補足テキスト */
+  --line: #e3e7ee;       /* 罫線 */
+  --paper: #ffffff;      /* スライド背景 */
+  --mist: #f4f6fa;       /* パネル背景 */
+  --stage: #0d1528;      /* スライドの外側（画面の余白） */
+
+  /* ロゴの虹色から抽出したアクセント */
+  --c-blue: #0a84e0;
+  --c-cyan: #00b5d8;
+  --c-green: #1fbf6a;
+  --c-yellow: #f5c400;
+  --c-orange: #f58a00;
+  --c-red: #f0384a;
+  --c-magenta: #e0307a;
+  --c-purple: #8b3fd9;
+
+  --accent: #0a6fd1;     /* 強調語の色（白背景で読める青） */
+  --rainbow: linear-gradient(90deg,
+    var(--c-blue), var(--c-cyan), var(--c-green), var(--c-yellow),
+    var(--c-orange), var(--c-red), var(--c-magenta), var(--c-purple));
+
+  /* 未定・要記入 */
+  --tbd-ink: #9a5b00;
+  --tbd-bg: #fff6e5;
+  --tbd-line: #f0b44c;
+
+  /* 文字サイズ（1920×1080 キャンバス基準） */
+  --fs-hero: 104px;
+  --fs-statement: 60px;
+  --fs-title: 60px;
+  --fs-title-sm: 48px;
+  --fs-lead: 48px;
+  --fs-body: 36px;
+  --fs-eyebrow: 30px;
+  --fs-note: 26px;
+  --fs-meta: 22px;
+
+  /* 余白 */
+  --pad-x: 140px;
+  --pad-top: 150px;
+  --pad-bottom: 130px;
+
+  --font: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--stage);
+  color: var(--ink);
+  font-family: var(--font);
+  font-feature-settings: "palt";
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ---------- 画面いっぱいに 16:9 を収める ---------- */
+.viewport {
+  position: fixed;
+  inset: 0;
+}
+
+.deck {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--scale, 0.5));
+  transform-origin: center center;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .35s ease, visibility .35s;
+}
+.slide.is-active { opacity: 1; visibility: visible; }
+
+/* ---------- 共通の枠（JSで各スライドに挿入） ---------- */
+.slide::before {               /* 上端の虹色ライン */
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 10px;
+  background: var(--rainbow);
+}
+.frame__chapter {
+  position: absolute;
+  top: 60px; left: var(--pad-x);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  letter-spacing: .18em;
+  color: var(--ink-sub);
+}
+.frame__chapter:empty { display: none; }
+.frame__brand {
+  position: absolute;
+  bottom: 52px; left: var(--pad-x);
+  display: flex; align-items: center; gap: 14px;
+  font-size: var(--fs-meta);
+  color: var(--ink-sub);
+}
+.frame__brand img { width: 36px; height: 36px; }
+.frame__page {
+  position: absolute;
+  bottom: 52px; right: var(--pad-x);
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-sub);
+}
+
+/* ---------- テキスト部品 ---------- */
+.eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 36px;
+  display: flex; align-items: center; gap: 20px;
+}
+.eyebrow::before {
+  content: "";
+  width: 56px; height: 6px;
+  border-radius: 3px;
+  background: var(--rainbow);
+}
+
+.title {
+  font-size: var(--fs-title);
+  font-weight: 900;
+  line-height: 1.4;
+  letter-spacing: .02em;
+}
+.title--sm { font-size: var(--fs-title-sm); line-height: 1.5; }
+
+.lead {
+  font-size: var(--fs-lead);
+  font-weight: 700;
+  line-height: 1.6;
+  margin-top: 40px;
+}
+
+.statement {
+  font-size: var(--fs-statement);
+  font-weight: 900;
+  line-height: 1.55;
+  letter-spacing: .02em;
+}
+
+em {
+  font-style: normal;
+  color: var(--accent);
+}
+strong { font-weight: 900; color: var(--accent); }
+
+.note {
+  margin-top: 56px;
+  max-width: 1500px;
+  font-size: var(--fs-note);
+  line-height: 1.7;
+  color: var(--ink-sub);
+}
+
+/* ---------- 表紙 ---------- */
+.slide--cover {
+  flex-direction: row;
+  align-items: center;
+  gap: 110px;
+  padding-left: 180px;
+}
+.slide--cover::before { height: 16px; }
+.cover__logo { width: 360px; height: 360px; flex: none; }
+.cover__kicker {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink-sub);
+  letter-spacing: .3em;
+}
+.cover__title {
+  font-size: var(--fs-hero);
+  font-weight: 900;
+  letter-spacing: .04em;
+  margin: 16px 0 56px;
+}
+.cover__theme {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.5;
+  padding-top: 40px;
+  border-top: 2px solid var(--line);
+}
+.label {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 6px;
+  padding: 6px 16px;
+  margin-right: 20px;
+  vertical-align: middle;
+}
+
+/* ---------- 問いのスライド（山場：紺背景） ---------- */
+.slide--question { background: var(--ink); color: var(--paper); }
+.slide--question .eyebrow { color: #8fc8ff; }
+.slide--question .frame__chapter,
+.slide--question .frame__brand,
+.slide--question .frame__page { color: #9aa6bd; }
+.question {
+  font-size: 70px;
+  font-weight: 900;
+  line-height: 1.55;
+  letter-spacing: .02em;
+}
+
+/* ---------- 概要の表 ---------- */
+.facts { margin-top: 64px; border-top: 2px solid var(--line); }
+.facts__row {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 40px;
+  padding: 28px 0;
+  border-bottom: 2px solid var(--line);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+}
+.facts dt { font-weight: 700; color: var(--ink-sub); }
+
+/* ---------- ゴールのカード ---------- */
+.cards {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-top: 64px;
+}
+.cards--single { grid-template-columns: 1fr; max-width: 1300px; }
+.card {
+  position: relative;
+  background: var(--mist);
+  border-radius: 24px;
+  padding: 56px 56px 56px 64px;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.6;
+  overflow: hidden;
+}
+.card::before {                /* 左端の虹色ライン */
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 10px;
+  background: linear-gradient(180deg, var(--c-blue), var(--c-green), var(--c-yellow), var(--c-red), var(--c-purple));
+}
+.card__num {
+  display: block;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  color: var(--ink-sub);
+  margin-bottom: 16px;
+}
+
+/* ---------- 未定・要記入 ---------- */
+.placeholder {
+  margin-top: 64px;
+  border: 3px dashed var(--tbd-line);
+  background: var(--tbd-bg);
+  color: var(--tbd-ink);
+  border-radius: 20px;
+  padding: 44px 52px;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  max-width: 1500px;
+}
+.placeholder__tag,
+.tbd {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  color: var(--paper);
+  background: var(--tbd-ink);
+  border-radius: 6px;
+  padding: 4px 14px;
+  margin-bottom: 16px;
+}
+.tbd { font-size: 28px; margin-bottom: 0; }
+
+/* ---------- 操作ボタン ---------- */
+.controls {
+  position: fixed;
+  right: 16px; bottom: 16px;
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(13, 21, 40, .72);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity .2s;
+  z-index: 10;
+}
+.controls:hover, .controls:focus-within, body.show-ui .controls { opacity: 1; }
+@media (hover: none) { .controls { opacity: .7; } }
+.controls__btn {
+  min-width: 36px; height: 36px;
+  border: 0; border-radius: 999px;
+  background: rgba(255, 255, 255, .12);
+  color: inherit;
+  font: inherit; font-size: 20px;
+  cursor: pointer;
+}
+.controls__btn--wide { font-size: 13px; padding: 0 14px; }
+.controls__btn:hover { background: rgba(255, 255, 255, .25); }
+.controls__count { min-width: 64px; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* ---------- 印刷（ブラウザの「PDFに保存」用） ---------- */
+@page { size: 1920px 1080px; margin: 0; }
+@media print {
+  html, body { overflow: visible; height: auto; background: none; }
+  .viewport { position: static; display: block; }
+  .deck { position: static; transform: none; width: auto; height: auto; }
+  .slide {
+    position: relative;
+    width: 1920px; height: 1080px;
+    opacity: 1; visibility: visible;
+    transition: none;
+    break-after: page;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .controls { display: none; }
+}
