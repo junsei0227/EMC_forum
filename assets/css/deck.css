@@ -23,7 +23,9 @@
   --c-magenta: #e0307a;
   --c-purple: #8b3fd9;
 
-  --accent: #0a6fd1;     /* 強調語の色（白背景で読める青） */
+  --accent: #0a6fd1;
+  --yellow: #ffd23f;     /* 第2アクセント：マーカー・番号・目次の現在地 */
+  --yellow-soft: #fff1b8;     /* 強調語の色（白背景で読める青） */
   --rainbow: linear-gradient(90deg,
     var(--c-blue), var(--c-cyan), var(--c-green), var(--c-yellow),
     var(--c-orange), var(--c-red), var(--c-magenta), var(--c-purple));
@@ -46,8 +48,8 @@
 
   /* 余白 */
   --pad-x: 140px;
-  --pad-top: 150px;
-  --pad-bottom: 130px;
+  --pad-top: 160px;
+  --pad-bottom: 120px;
 
   --font: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
 }
@@ -103,15 +105,26 @@ html, body {
   height: 10px;
   background: var(--rainbow);
 }
-.frame__chapter {
+.frame__toc {                  /* 上部の目次バー */
   position: absolute;
-  top: 60px; left: var(--pad-x);
+  top: 44px; left: var(--pad-x); right: var(--pad-x);
+  display: flex;
+  gap: 8px;
+  list-style: none;
   font-size: var(--fs-meta);
   font-weight: 700;
-  letter-spacing: .18em;
-  color: var(--ink-sub);
+  color: #9aa3b2;
 }
-.frame__chapter:empty { display: none; }
+.frame__toc li {
+  flex: 1;
+  padding: 10px 0 12px;
+  border-bottom: 4px solid var(--line);
+  text-align: center;
+}
+.frame__toc li.is-current {
+  color: var(--ink);
+  border-bottom-color: var(--yellow);
+}
 .frame__brand {
   position: absolute;
   bottom: 52px; left: var(--pad-x);
@@ -170,6 +183,11 @@ em {
   color: var(--accent);
 }
 strong { font-weight: 900; color: var(--accent); }
+mark {                         /* 黄色のマーカー */
+  color: inherit;
+  background: linear-gradient(transparent 62%, var(--yellow) 62%);
+  padding: 0 .06em;
+}
 
 .note {
   margin-top: 56px;
@@ -223,7 +241,9 @@ strong { font-weight: 900; color: var(--accent); }
 /* ---------- 問いのスライド（山場：紺背景） ---------- */
 .slide--question { background: var(--ink); color: var(--paper); }
 .slide--question .eyebrow { color: #8fc8ff; }
-.slide--question .frame__chapter,
+.slide--question .frame__toc { color: #6f7b93; }
+.slide--question .frame__toc li { border-bottom-color: #2a3a5c; }
+.slide--question .frame__toc li.is-current { color: var(--paper); border-bottom-color: var(--yellow); }
 .slide--question .frame__brand,
 .slide--question .frame__page { color: #9aa6bd; }
 .question {
@@ -232,14 +252,23 @@ strong { font-weight: 900; color: var(--accent); }
   line-height: 1.55;
   letter-spacing: .02em;
 }
+.question mark { background: linear-gradient(transparent 64%, rgba(255, 210, 63, .55) 64%); }
+.question__sub {
+  margin-top: 64px;
+  padding-left: 28px;
+  border-left: 6px solid var(--yellow);
+  font-size: 34px;
+  line-height: 1.7;
+  color: #c9d2e3;
+}
 
 /* ---------- 概要の表 ---------- */
-.facts { margin-top: 64px; border-top: 2px solid var(--line); }
+.facts { margin-top: 48px; border-top: 2px solid var(--line); }
 .facts__row {
   display: grid;
   grid-template-columns: 340px 1fr;
   gap: 40px;
-  padding: 28px 0;
+  padding: 24px 0;
   border-bottom: 2px solid var(--line);
   font-size: var(--fs-body);
   line-height: 1.55;
@@ -254,7 +283,6 @@ strong { font-weight: 900; color: var(--accent); }
   gap: 48px;
   margin-top: 64px;
 }
-.cards--single { grid-template-columns: 1fr; max-width: 1300px; }
 .card {
   position: relative;
   background: var(--mist);
@@ -273,12 +301,129 @@ strong { font-weight: 900; color: var(--accent); }
   background: linear-gradient(180deg, var(--c-blue), var(--c-green), var(--c-yellow), var(--c-red), var(--c-purple));
 }
 .card__num {
-  display: block;
-  font-size: 28px;
+  display: inline-block;
+  min-width: 56px;
+  font-size: 26px;
   font-weight: 900;
-  letter-spacing: .1em;
+  letter-spacing: .06em;
+  text-align: center;
+  color: var(--ink);
+  background: var(--yellow);
+  border-radius: 999px;
+  padding: 6px 18px;
+  margin-bottom: 20px;
+}
+.card--muted { color: var(--ink-sub); background: #fafbfc; border: 2px solid var(--line); }
+.card--muted::before { background: var(--line); }
+.card--muted .card__num { background: var(--line); color: var(--ink-sub); }
+
+/* ---------- 2枚目：このあとの流れ ---------- */
+.agenda {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  margin-top: 72px;
+}
+.agenda li {
+  background: var(--mist);
+  border-radius: 20px;
+  border-top: 8px solid var(--yellow);
+  padding: 32px 32px 36px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.agenda__no { font-size: 24px; font-weight: 700; color: var(--ink-sub); font-variant-numeric: tabular-nums; }
+.agenda b { font-size: 38px; font-weight: 900; }
+.agenda li > span:last-child { font-size: 26px; line-height: 1.6; color: var(--ink-sub); }
+
+/* ---------- 3枚目：BANI ---------- */
+.bani {
+  margin-top: 64px;
+  background: var(--mist);
+  border-radius: 20px;
+  padding: 36px 44px 40px;
+}
+.bani__head { font-size: 30px; color: var(--ink-sub); margin-bottom: 24px; }
+.bani__head b { color: var(--ink); }
+.bani__list { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.bani__list li {
+  background: var(--paper);
+  border-radius: 14px;
+  padding: 22px 26px;
+  font-size: 28px;
   color: var(--ink-sub);
-  margin-bottom: 16px;
+}
+.bani__list b {
+  font-size: 44px; font-weight: 900; color: var(--accent);
+}
+.bani__list span { display: block; margin-top: 6px; font-size: 32px; font-weight: 700; color: var(--ink); }
+
+/* ---------- 流れの図（4枚目・6枚目） ---------- */
+.flow {
+  list-style: none;
+  display: flex;
+  align-items: stretch;
+  gap: 64px;
+  margin-top: 64px;
+}
+.flow__step {
+  position: relative;
+  flex: 1;
+  background: var(--mist);
+  border-radius: 20px;
+  padding: 36px 32px;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.flow__step + .flow__step::before {   /* 矢印 */
+  content: "";
+  position: absolute;
+  left: -46px; top: 50%;
+  width: 28px; height: 28px;
+  border-top: 6px solid var(--ink-sub);
+  border-right: 6px solid var(--ink-sub);
+  transform: translateY(-50%) rotate(45deg);
+}
+.flow__step small { display: block; font-size: 24px; color: var(--ink-sub); margin-bottom: 8px; }
+.flow__step--goal { background: var(--yellow-soft); box-shadow: inset 0 0 0 3px var(--yellow); }
+.flow--4 .flow__step { font-size: 32px; }
+
+/* ---------- 8枚目：3つの方針 ---------- */
+.pillars {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 56px;
+}
+.pillars li {
+  background: var(--mist);
+  border-radius: 20px;
+  padding: 36px 40px;
+  border-top: 8px solid var(--yellow);
+}
+.pillars b { display: block; font-size: 44px; font-weight: 900; margin-bottom: 14px; }
+.pillars span { font-size: 30px; line-height: 1.6; color: var(--ink-sub); }
+
+/* ---------- 11枚目：これから詰めること ---------- */
+.todo {
+  margin-top: 72px;
+  display: flex; align-items: center; gap: 40px;
+  background: var(--mist);
+  border-radius: 20px;
+  padding: 36px 44px;
+}
+.todo__head { font-size: 30px; font-weight: 700; color: var(--ink-sub); flex: none; }
+.todo__list { list-style: none; display: flex; gap: 20px; flex-wrap: wrap; }
+.todo__list li {
+  font-size: 34px; font-weight: 700;
+  background: var(--paper);
+  border-left: 8px solid var(--yellow);
+  border-radius: 12px;
+  padding: 16px 28px;
 }
 
 /* ---------- 未定・要記入 ---------- */
@@ -306,6 +451,8 @@ strong { font-weight: 900; color: var(--accent); }
   margin-bottom: 16px;
 }
 .tbd { font-size: 28px; margin-bottom: 0; }
+.placeholder--row { display: flex; align-items: center; gap: 28px; padding: 28px 40px; margin-top: 48px; font-size: 30px; }
+.placeholder--row .placeholder__tag { margin-bottom: 0; flex: none; }
 
 /* ---------- 操作ボタン ---------- */
 .controls {

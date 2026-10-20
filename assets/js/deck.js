@@ -6,12 +6,29 @@
   const currentEl = document.getElementById('current');
   document.getElementById('total').textContent = total;
 
-  // 各スライドに章ラベル・ロゴ・ページ番号を差し込む
+  // 上部の目次バー（現在の章をハイライト）
+  const chapters = [
+    ['intro', '導入'],
+    ['why', 'なぜやるのか'],
+    ['what', '何をするのか'],
+    ['goal', '目指す状態'],
+    ['next', '今後の進め方'],
+  ];
+
+  // 各スライドに目次バー・ロゴ・ページ番号を差し込む（番号は並び順から自動）
   slides.forEach((slide, i) => {
-    const chapter = document.createElement('p');
-    chapter.className = 'frame__chapter';
-    chapter.textContent = slide.dataset.chapter || '';
-    slide.appendChild(chapter);
+    const current = slide.dataset.chapter;
+    if (current) {
+      const toc = document.createElement('ol');
+      toc.className = 'frame__toc';
+      chapters.forEach(([key, label]) => {
+        const li = document.createElement('li');
+        li.textContent = label;
+        if (key === current) li.className = 'is-current';
+        toc.appendChild(li);
+      });
+      slide.appendChild(toc);
+    }
 
     if (i > 0) {
       const brand = document.createElement('p');
@@ -24,6 +41,16 @@
       page.textContent = (i + 1) + ' / ' + total;
       slide.appendChild(page);
     }
+  });
+
+  // 2枚目の「このあとの流れ」に各章のページ範囲を自動で入れる
+  document.querySelectorAll('[data-for]').forEach((el) => {
+    const pages = slides
+      .map((s, i) => (s.dataset.chapter === el.dataset.for ? i + 1 : null))
+      .filter(Boolean);
+    if (!pages.length) return;
+    const first = pages[0], last = pages[pages.length - 1];
+    el.textContent = first === last ? 'p.' + first : 'p.' + first + '–' + last;
   });
 
   // 画面サイズに合わせて 1920×1080 を拡大縮小
